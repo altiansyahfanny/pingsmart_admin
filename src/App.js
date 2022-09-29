@@ -1,58 +1,55 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
+import moment from 'moment';
+import localization from 'moment/locale/id';
+
+import { Routes, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import { ROLES } from './config/roles';
+
+import { Layout, Public, Admin, Master, RequireAuth, PersistLogin } from './layouts';
+
+import { Dashboard, Guru, Murid, Pelajaran, Agenda, Jadwal, Nilai, User, Login } from './pages';
+
 import './App.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
-    </div>
-  );
+	moment.updateLocale('id', localization);
+
+	return (
+		<>
+			<Routes>
+				<Route path="/" element={<Layout />}>
+					<Route index element={<Public />} />
+					<Route path="login" element={<Login />} />
+					<Route element={<PersistLogin />}>
+						<Route element={<RequireAuth allowedRoles={[...Object.values(ROLES)]} />}>
+							<Route path="dash" element={<Admin />}>
+								<Route index element={<Dashboard />} />
+								<Route path="master">
+									<Route index element={<Master />} />
+									<Route path="guru" element={<Guru />} />
+									<Route path="murid" element={<Murid />} />
+									<Route path="pelajaran" element={<Pelajaran />} />
+								</Route>
+								<Route path="agenda" element={<Agenda />} />
+								<Route path="jadwal" element={<Jadwal />} />
+								<Route path="nilai" element={<Nilai />} />
+								<Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
+									<Route path="users" element={<User />} />
+								</Route>
+							</Route>
+						</Route>
+					</Route>
+				</Route>
+			</Routes>
+			<ToastContainer
+				autoClose={3000}
+				position="top-right"
+				pauseOnHover={false}
+				pauseOnFocusLoss={false}
+			/>
+		</>
+	);
 }
 
 export default App;
